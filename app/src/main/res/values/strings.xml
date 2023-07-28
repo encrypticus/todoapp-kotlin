@@ -8,22 +8,25 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="search">Search</string>
+    <string name="change_view">Change view</string>
     <string name="sort_by">Sort By</string>
     <string name="priority_low">Priority Low</string>
     <string name="priority_medium">Priority Medium</string>
     <string name="priority_high">Priority High</string>
     <string name="delete_all">Delete All</string>
+    <string name="reset_sorting">Reset Sorting</string>
     <string name="add">Add</string>
     <string name="save">Save</string>
     <string name="delete">Delete %s</string>
     <string name="delete_everything">Delete everything</string>
     <string name="confirm_deletion_of_everything">Are you sure you want to remove everything?</string>
     <string name="confirm_deletion_item">Are you sure you want to remove %s ?</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="restore">Restore</string>
     <string name="deleted">Deleted %s</string>
     <string name="fill_out_all_fields">Please fill out all fields</string>
+    <string name="preferences">Settings</string>
 
     <string-array name="priorities">
         <item>Low Priority</item>

@@ -29,16 +29,16 @@
             app:navigateToUpdateFragment="@{toDoItem}">
 
             <androidx.cardview.widget.CardView
-                app:cardPreventCornerOverlap="false"
-                app:cardUseCompatPadding="true"
-                app:cardBgColor="@{toDoItem}"
                 android:id="@+id/priority_indicator"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:cardBackgroundColor="@color/red"
+                app:cardBgColor="@{toDoItem}"
                 app:cardCornerRadius="100dp"
+                app:cardPreventCornerOverlap="false"
+                app:cardUseCompatPadding="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -64,19 +64,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:maxLength="300"
                 android:maxLines="10"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:text="@{toDoItem.description}"
                 android:textColor="@color/taskColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/tv_title"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_title"
                 app:layout_constraintVertical_bias="0.0"
-                tools:text="Drink the tea" />
+                tools:text="description" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,9 @@
 package com.timofeev.todoapp.presentation
 
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Button
 import android.widget.Spinner
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -42,6 +44,7 @@ fun bindPriority(view: Spinner, priority: Priority) {
     Priority.LOW -> view.setSelection(0)
     Priority.MEDIUM -> view.setSelection(1)
     Priority.HIGH -> view.setSelection(2)
+    else -> view.setSelection(0)
   }
 }
 
@@ -52,9 +55,11 @@ fun bindOnSpinnerItemSelectedListener(view: Spinner, listener: AdapterView.OnIte
 
 @BindingAdapter("cardBgColor")
 fun bindCardBgColor(cardView: CardView, toDoItem: ToDoItem) {
+  Log.d("Priority", toDoItem.priority.name)
   when (toDoItem.priority) {
     Priority.LOW -> cardView.setCardBackgroundColor(cardView.context.getColor(R.color.green))
     Priority.MEDIUM -> cardView.setCardBackgroundColor(cardView.context.getColor(R.color.yellow))
     Priority.HIGH -> cardView.setCardBackgroundColor(cardView.context.getColor(R.color.red))
+    else -> cardView.setCardBackgroundColor(cardView.context.getColor(R.color.green))
   }
 }

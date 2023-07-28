@@ -16,7 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timofeev.todoapp.R
-import com.timofeev.todoapp.data.viewmodel.ToDoViewModel
+import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 import com.timofeev.todoapp.databinding.FragmentUpdateBinding
 import com.timofeev.todoapp.domain.entities.ToDoItem
 import com.timofeev.todoapp.presentation.fragments.SharedViewModel

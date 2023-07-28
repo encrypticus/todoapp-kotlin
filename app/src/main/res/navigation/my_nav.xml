@@ -9,7 +9,7 @@
         android:id="@+id/listFragment"
         android:name="com.timofeev.todoapp.presentation.fragments.list.ListFragment"
         android:label="@string/to_do_list"
-        tools:layout="@layout/fragment_list" >
+        tools:layout="@layout/fragment_list">
         <action
             android:id="@+id/action_listFragment_to_addFragment"
             app:destination="@id/addFragment"
@@ -29,7 +29,7 @@
         android:id="@+id/addFragment"
         android:name="com.timofeev.todoapp.presentation.fragments.add.AddFragment"
         android:label="@string/addition"
-        tools:layout="@layout/fragment_add" >
+        tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_listFragment"
             app:destination="@id/listFragment"
@@ -40,7 +40,7 @@
         android:id="@+id/updateFragment"
         android:name="com.timofeev.todoapp.presentation.fragments.update.UpdateFragment"
         android:label="@string/editing"
-        tools:layout="@layout/fragment_update" >
+        tools:layout="@layout/fragment_update">
         <action
             android:id="@+id/action_updateFragment_to_listFragment"
             app:destination="@id/listFragment"
@@ -49,5 +49,18 @@
         <argument
             android:name="currentItem"
             app:argType="com.timofeev.todoapp.domain.entities.ToDoItem" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.timofeev.todoapp.presentation.MainActivity"
+        android:label="MainActivity">
+    </activity>
+    <fragment
+        android:id="@+id/preferenceFragment"
+        android:name="com.timofeev.todoapp.presentation.fragments.preference.PreferenceFragment"
+        android:label="@string/preferences">
+        <action
+            android:id="@+id/action_preferenceFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
     </fragment>
 </navigation>

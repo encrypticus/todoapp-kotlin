@@ -14,8 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.timofeev.todoapp.R
-import com.timofeev.todoapp.data.models.ToDoItemDbModel
-import com.timofeev.todoapp.data.viewmodel.ToDoViewModel
+import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 import com.timofeev.todoapp.databinding.FragmentAddBinding
 import com.timofeev.todoapp.domain.entities.ToDoItem
 import com.timofeev.todoapp.presentation.fragments.SharedViewModel
@@ -25,7 +24,7 @@ class AddFragment : Fragment(), MenuProvider {
   private val binding: FragmentAddBinding
     get() = _binding ?: throw RuntimeException("FragmentAddBinding == null")
 
-  private val viewModel: ToDoViewModel by viewModels()
+  private val toDoViewModel: ToDoViewModel by viewModels()
   private val sharedViewModel: SharedViewModel by viewModels()
 
   override fun onCreateView(
@@ -74,7 +73,7 @@ class AddFragment : Fragment(), MenuProvider {
           description
         )
 
-        viewModel.addToDoItem(toDoItem)
+        toDoViewModel.addToDoItem(toDoItem)
         findNavController().navigate(R.id.action_addFragment_to_listFragment)
       } else {
         Toast.makeText(

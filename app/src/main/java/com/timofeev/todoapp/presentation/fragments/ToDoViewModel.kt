@@ -1,4 +1,4 @@
-package com.timofeev.todoapp.data.viewmodel
+package com.timofeev.todoapp.presentation.fragments
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -21,22 +21,29 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
   private val repository: ToDoRepositoryImpl = ToDoRepositoryImpl(application)
 
   private val getToDoListUseCase = GetToDoListUseCase(repository)
+
   private val getToDoListSortedByLowPriorityUseCase =
     GetToDoListSortedByLowPriorityUseCase(repository)
+
   private val getToDoListSortedByMediumPriorityUseCase =
     GetToDoListSortedByMediumPriorityUseCase(repository)
+
   private val getToDoListSortedByHighPriorityUseCase =
     GetToDoListSortedByHighPriorityUseCase(repository)
+
   private val addToDoItemUseCase = AddToDoItemUseCase(repository)
   private val editToDoItemUseCase = EditToDoItemUseCase(repository)
   private val deleteToDoItemUseCase = DeleteToDoItemUseCase(repository)
   private val deleteAllUseCase = DeleteAllUseCase(repository)
 
   val toDoList = getToDoListUseCase.getToDoList()
+
   val toDoListSortedByLowPriority =
     getToDoListSortedByLowPriorityUseCase.getToDoListSortedByLowPriority()
+
   val toDoListSortedByMediumPriority =
     getToDoListSortedByMediumPriorityUseCase.getToDoListSortedByMediumPriority()
+
   val toDoListSortedByHighPriority =
     getToDoListSortedByHighPriorityUseCase.getToDoListSortedByHighPriority()
 

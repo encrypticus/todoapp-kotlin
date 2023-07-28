@@ -8,11 +8,13 @@
     <string name="title">Заголовок</string>
     <string name="description">Описание</string>
     <string name="search">Поиск</string>
+    <string name="change_view">Изменить вид</string>
     <string name="sort_by">Сортировать по</string>
     <string name="priority_low">Низкому приоритету</string>
     <string name="priority_medium">Среднему приоритету</string>
     <string name="priority_high">Высокому приоритету</string>
     <string name="delete_all">Удалить все</string>
+    <string name="reset_sorting">Сбросить сортировку</string>
     <string name="add">Добавить</string>
     <string name="save">Сохранить</string>
     <string name="delete">Удалить %s</string>
@@ -24,6 +26,7 @@
     <string name="restore">Восстановить</string>
     <string name="deleted">Удалено %s</string>
     <string name="fill_out_all_fields">Пожалуйста, заполните все поля</string>
+    <string name="preferences">Настройки</string>
 
     <string-array name="priorities">
         <item>Низкий приоритет</item>

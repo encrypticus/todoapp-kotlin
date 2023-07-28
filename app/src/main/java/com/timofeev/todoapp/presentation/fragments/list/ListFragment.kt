@@ -13,19 +13,24 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.timofeev.todoapp.R
-import com.timofeev.todoapp.data.models.ToDoItemDbModel
-import com.timofeev.todoapp.data.viewmodel.ToDoViewModel
 import com.timofeev.todoapp.databinding.FragmentListBinding
+import com.timofeev.todoapp.domain.entities.Priority
 import com.timofeev.todoapp.domain.entities.ToDoItem
+import com.timofeev.todoapp.presentation.fragments.PriorityPrefs
+import com.timofeev.todoapp.presentation.fragments.ToDoListLayoutPrefs
+import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 import com.timofeev.todoapp.presentation.fragments.list.adpater.ToDoListAdapter
-import jp.wasabeef.recyclerview.animators.FlipInTopXAnimator
 
 class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
+
+  private var isGridView = false
+
   private var _binding: FragmentListBinding? = null
   private val binding: FragmentListBinding
     get() = _binding ?: throw RuntimeException("FragmentListBinding == null")
@@ -46,9 +51,10 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
     activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     binding.lifecycleOwner = viewLifecycleOwner
+    isGridView = ToDoListLayoutPrefs.getStoredLayout(requireContext())
 
     setupRecyclerView()
-    observeViewModel()
+    observeToDoList(PriorityPrefs.getStoredPriority(requireContext()))
     setupSwipeListener(binding.recyclerView)
   }
 
@@ -57,38 +63,68 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
     _binding = null
   }
 
+  /**
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * MENU
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   */
   override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
     menuInflater.inflate(R.menu.list_fragment_menu, menu)
+    updateChangeViewItemIcon(menu.findItem(R.id.menu_change_view))
     setupSearchView(menu)
   }
+
+  override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+    when (menuItem.itemId) {
+      R.id.menu_priority_low -> {
+        selectItem(Priority.LOW.name)
+      }
+
+      R.id.menu_priority_medium -> {
+        selectItem(Priority.MEDIUM.name)
+      }
+
+      R.id.menu_priority_high -> {
+        selectItem(Priority.HIGH.name)
+      }
+
+      R.id.menu_delete_all -> confirmRemoval()
+
+      R.id.menu_reset_sorting -> {
+        selectItem(Priority.NONE.name)
+      }
+
+      R.id.menu_change_view -> {
+        isGridView = !isGridView
+        ToDoListLayoutPrefs.setStoredLayout(requireContext(), isGridView)
+        switchRecyclerViewLayout()
+        updateChangeViewItemIcon(menuItem)
+      }
+    }
+    return true
+  }
+
+  private fun selectItem(priority: String) {
+    PriorityPrefs.setStoredPriority(requireContext(), priority)
+    observeToDoList(priority)
+  }
+
+  private fun updateChangeViewItemIcon(item: MenuItem) {
+    val icon = if (isGridView) R.drawable.ic_listview else R.drawable.ic_gridview
+    item.setIcon(icon)
+  }
+
+  /**
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * SEARCH
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   */
 
   private fun setupSearchView(menu: Menu) {
     val search = menu.findItem(R.id.menu_search)
     val searchView = search.actionView as? SearchView
     searchView?.isSubmitButtonEnabled = true
     searchView?.setOnQueryTextListener(this)
-  }
-
-  override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-    when (menuItem.itemId) {
-      R.id.menu_priority_low -> {
-        toDoViewModel.toDoListSortedByLowPriority.observe(viewLifecycleOwner) {
-          toDoListAdapter.submitList(it)
-        }
-      }
-      R.id.menu_priority_medium -> {
-        toDoViewModel.toDoListSortedByMediumPriority.observe(viewLifecycleOwner) {
-          toDoListAdapter.submitList(it)
-        }
-      }
-      R.id.menu_priority_high -> {
-        toDoViewModel.toDoListSortedByHighPriority.observe(viewLifecycleOwner) {
-          toDoListAdapter.submitList(it)
-        }
-      }
-      R.id.menu_delete_all -> confirmRemoval()
-    }
-    return true
   }
 
   override fun onQueryTextSubmit(query: String?): Boolean {
@@ -115,18 +151,45 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
     }
   }
 
-  private fun setupRecyclerView() {
+  /**
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * RECYCLER VIEW
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   */
+
+  private fun switchRecyclerViewLayout() {
     with(binding.recyclerView) {
-      adapter = toDoListAdapter
-      layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-      itemAnimator = FlipInTopXAnimator().apply {
-        addDuration = 300
+      layoutManager = if (isGridView) {
+        StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+      } else {
+        StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
       }
     }
   }
 
-  private fun observeViewModel() {
-    toDoViewModel.toDoList.observe(viewLifecycleOwner) {
+  private fun setupRecyclerView() {
+    switchRecyclerViewLayout()
+    with(binding.recyclerView) {
+      adapter = toDoListAdapter
+      itemAnimator = DefaultItemAnimator().apply {
+        addDuration = 200
+      }
+    }
+  }
+  /**
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   * RECYCLER VIEW
+   * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   */
+
+  private fun observeToDoList(priority: String) {
+    val toDoList = when (priority) {
+      Priority.LOW.name -> toDoViewModel.toDoListSortedByLowPriority
+      Priority.MEDIUM.name -> toDoViewModel.toDoListSortedByMediumPriority
+      Priority.HIGH.name -> toDoViewModel.toDoListSortedByHighPriority
+      else -> toDoViewModel.toDoList
+    }
+    toDoList.observe(viewLifecycleOwner) {
       toDoListAdapter.submitList(it)
       showNoDataViews(it)
     }
@@ -175,7 +238,7 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
     val snackBar = Snackbar.make(
       view,
       String.format(getString(R.string.deleted), "'${deletedItem.title}'"),
-      Snackbar.LENGTH_LONG
+      5000
     )
     snackBar.setAction(R.string.restore) {
       toDoViewModel.addToDoItem(deletedItem)

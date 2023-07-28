@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_search"
@@ -8,7 +9,13 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
 
-    <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/menu_change_view"
+        android:icon="@drawable/ic_listview"
+        android:title="@string/change_view"
+        app:showAsAction="ifRoom" />
+
+    <group>
         <item
             android:id="@+id/menu_sortBy"
             android:title="@string/sort_by">
@@ -27,7 +34,13 @@
     </group>
 
     <item
+        android:id="@+id/menu_reset_sorting"
+        android:title="@string/reset_sorting"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_delete_all"
         android:title="@string/delete_all"
         app:showAsAction="never" />
+
 </menu>
