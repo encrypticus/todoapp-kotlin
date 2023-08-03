@@ -22,14 +22,15 @@ import com.timofeev.todoapp.R
 import com.timofeev.todoapp.databinding.FragmentListBinding
 import com.timofeev.todoapp.domain.entities.Priority
 import com.timofeev.todoapp.domain.entities.ToDoItem
-import com.timofeev.todoapp.presentation.fragments.PriorityPrefs
-import com.timofeev.todoapp.presentation.fragments.ToDoListLayoutPrefs
+import com.timofeev.todoapp.presentation.fragments.GlobalPrefs
 import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 import com.timofeev.todoapp.presentation.fragments.list.adpater.ToDoListAdapter
 
 class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
   private var isGridView = false
+  private lateinit var storedPriority: String
+  private var isDeleteWithoutConfirmation = false
 
   private var _binding: FragmentListBinding? = null
   private val binding: FragmentListBinding
@@ -51,10 +52,13 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
     activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
     binding.lifecycleOwner = viewLifecycleOwner
-    isGridView = ToDoListLayoutPrefs.getStoredLayout(requireContext())
+
+    isGridView = GlobalPrefs.getStoredLayout(requireContext())
+    storedPriority = GlobalPrefs.getStoredPriority(requireContext())
+    isDeleteWithoutConfirmation = GlobalPrefs.getStoredConfirmDelete(requireContext())
 
     setupRecyclerView()
-    observeToDoList(PriorityPrefs.getStoredPriority(requireContext()))
+    observeToDoList(storedPriority)
     setupSwipeListener(binding.recyclerView)
   }
 
@@ -96,7 +100,7 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
       R.id.menu_change_view -> {
         isGridView = !isGridView
-        ToDoListLayoutPrefs.setStoredLayout(requireContext(), isGridView)
+        GlobalPrefs.setStoredLayout(requireContext(), isGridView)
         switchRecyclerViewLayout()
         updateChangeViewItemIcon(menuItem)
       }
@@ -105,7 +109,7 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
   }
 
   private fun selectItem(priority: String) {
-    PriorityPrefs.setStoredPriority(requireContext(), priority)
+    GlobalPrefs.setStoredPriority(requireContext(), priority)
     observeToDoList(priority)
   }
 
@@ -176,6 +180,7 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
       }
     }
   }
+
   /**
    * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    * RECYCLER VIEW
@@ -184,10 +189,18 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
   private fun observeToDoList(priority: String) {
     val toDoList = when (priority) {
-      Priority.LOW.name -> toDoViewModel.toDoListSortedByLowPriority
-      Priority.MEDIUM.name -> toDoViewModel.toDoListSortedByMediumPriority
-      Priority.HIGH.name -> toDoViewModel.toDoListSortedByHighPriority
-      else -> toDoViewModel.toDoList
+      Priority.LOW.name -> {
+        toDoViewModel.toDoListSortedByLowPriority
+      }
+      Priority.MEDIUM.name -> {
+        toDoViewModel.toDoListSortedByMediumPriority
+      }
+      Priority.HIGH.name -> {
+        toDoViewModel.toDoListSortedByHighPriority
+      }
+      else -> {
+        toDoViewModel.toDoList
+      }
     }
     toDoList.observe(viewLifecycleOwner) {
       toDoListAdapter.submitList(it)
@@ -211,6 +224,49 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
     }
   }
 
+  private fun confirmItemRemoval(
+    toDoItem: ToDoItem,
+    recyclerView: RecyclerView,
+    viewHolder: RecyclerView.ViewHolder,
+    onConfirmCallback: () -> Unit
+  ) {
+    with(AlertDialog.Builder(requireContext())) {
+      setPositiveButton(R.string.ok) { _, _ ->
+        onConfirmCallback()
+      }
+      setNegativeButton(R.string.cancel) { _, _ ->
+        recyclerView.adapter?.notifyItemChanged(viewHolder.adapterPosition)
+      }
+      setOnCancelListener {
+        recyclerView.adapter?.notifyItemChanged(viewHolder.adapterPosition)
+      }
+      setTitle(
+        String.format(
+          getString(R.string.delete),
+          "'${toDoItem.title}'"
+        )
+      )
+      setMessage(
+        String.format(
+          getString(R.string.confirm_deletion_item),
+          "'${toDoItem.title}'"
+        )
+      )
+      create().show()
+    }
+  }
+
+  private fun onDeleteItemCallback(
+    toDoItem: ToDoItem,
+    viewHolder: RecyclerView.ViewHolder
+  ) {
+    storedPriority = GlobalPrefs.getStoredPriority(requireContext())
+
+    toDoViewModel.deleteToDoItem(toDoItem)
+    restoreDeletedToDoItem(viewHolder.itemView, toDoItem)
+//    observeToDoList(storedPriority)
+  }
+
   private fun setupSwipeListener(recyclerView: RecyclerView) {
     val callback = object : ItemTouchHelper.SimpleCallback(
       0,
@@ -226,9 +282,15 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
 
       override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val toDoItem = toDoListAdapter.currentList[viewHolder.adapterPosition]
-        toDoViewModel.deleteToDoItem(toDoItem)
-        restoreDeletedToDoItem(viewHolder.itemView, toDoItem)
+        if (isDeleteWithoutConfirmation) {
+          onDeleteItemCallback(toDoItem, viewHolder)
+        } else {
+          confirmItemRemoval(toDoItem, recyclerView, viewHolder) {
+            onDeleteItemCallback(toDoItem, viewHolder)
+          }
+        }
       }
+
     }
     val itemTouchHelper = ItemTouchHelper(callback)
     itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -242,6 +304,8 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
     )
     snackBar.setAction(R.string.restore) {
       toDoViewModel.addToDoItem(deletedItem)
+      storedPriority = GlobalPrefs.getStoredPriority(requireContext())
+//      observeToDoList(storedPriority)
     }
     snackBar.show()
   }

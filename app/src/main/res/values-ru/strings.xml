@@ -33,4 +33,5 @@
         <item>Средний приоритет</item>
         <item>Высокий приоритет</item>
     </string-array>
+    <string name="delete_item_with_confirm">Удалять элемент без подтверждения</string>
 </resources>

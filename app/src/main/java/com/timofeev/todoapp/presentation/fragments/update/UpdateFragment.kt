@@ -16,10 +16,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.timofeev.todoapp.R
-import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 import com.timofeev.todoapp.databinding.FragmentUpdateBinding
 import com.timofeev.todoapp.domain.entities.ToDoItem
+import com.timofeev.todoapp.presentation.fragments.GlobalPrefs
 import com.timofeev.todoapp.presentation.fragments.SharedViewModel
+import com.timofeev.todoapp.presentation.fragments.ToDoViewModel
 
 class UpdateFragment : Fragment(), MenuProvider {
   private var _binding: FragmentUpdateBinding? = null
@@ -28,6 +29,8 @@ class UpdateFragment : Fragment(), MenuProvider {
   private val args by navArgs<UpdateFragmentArgs>()
   private val sharedViewModel: SharedViewModel by viewModels()
   private val toDoViewModel: ToDoViewModel by viewModels()
+
+  private var isDeleteWithoutConfirmation: Boolean = false
 
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -42,6 +45,7 @@ class UpdateFragment : Fragment(), MenuProvider {
     super.onViewCreated(view, savedInstanceState)
     setupValues()
     setupOptionsMenu()
+    isDeleteWithoutConfirmation = GlobalPrefs.getStoredConfirmDelete(requireContext())
   }
 
   override fun onDestroy() {
@@ -56,25 +60,37 @@ class UpdateFragment : Fragment(), MenuProvider {
   override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
     when (menuItem.itemId) {
       R.id.menu_save -> updateItem()
-      R.id.menu_delete -> confirmItemRemoval()
+      R.id.menu_delete -> if (isDeleteWithoutConfirmation) {
+        deleteToDoItem()
+      } else {
+        confirmItemRemoval()
+      }
     }
     return true
+  }
+
+  private fun deleteToDoItem() {
+    toDoViewModel.deleteToDoItem(args.currentItem)
+    findNavController().popBackStack()
   }
 
   private fun confirmItemRemoval() {
     with(AlertDialog.Builder(requireContext())) {
       setPositiveButton(R.string.ok) { _, _ ->
-        toDoViewModel.deleteToDoItem(args.currentItem)
-        findNavController().popBackStack()
+        deleteToDoItem()
       }
       setNegativeButton(R.string.cancel) { _, _ -> }
       setTitle(
-        String.format(getString(R.string.delete),
-          "'${args.currentItem.title}'")
+        String.format(
+          getString(R.string.delete),
+          "'${args.currentItem.title}'"
+        )
       )
       setMessage(
-        String.format(getString(R.string.confirm_deletion_item),
-        "'${args.currentItem.title}'")
+        String.format(
+          getString(R.string.confirm_deletion_item),
+          "'${args.currentItem.title}'"
+        )
       )
       create().show()
     }

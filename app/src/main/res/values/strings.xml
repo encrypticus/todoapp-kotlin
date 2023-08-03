@@ -33,4 +33,5 @@
         <item>Medium Priority</item>
         <item>High Priority</item>
     </string-array>
+    <string name="delete_item_with_confirm">Delete item without confirmation</string>
 </resources>
