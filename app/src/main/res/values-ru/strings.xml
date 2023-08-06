@@ -44,5 +44,5 @@
     <string name="choose_theme">Выбрать тему</string>
     <string name="theme">Тема</string>
     <string name="theme_color">Цвет темы</string>
-    <string name="choose_theme_color">Выберите цвет темы</string>
+    <string name="choose_theme_color">Выбрать цвет темы</string>
 </resources>
