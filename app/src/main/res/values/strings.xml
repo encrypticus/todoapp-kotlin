@@ -33,5 +33,34 @@
         <item>Medium Priority</item>
         <item>High Priority</item>
     </string-array>
+
+    <string-array name="currentThemeOptions">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System</item>
+    </string-array>
+
+    <string-array name="currentThemeValues">
+        <item>DAY</item>
+        <item>NIGHT</item>
+        <item>SYSTEM</item>
+    </string-array>
+
+    <string-array name="currentThemeColorOptions">
+        <item>Teal</item>
+        <item>Indigo</item>
+        <item>Orange</item>
+    </string-array>
+
+    <string-array name="currentThemeColorValues">
+        <item>TEAL</item>
+        <item>INDIGO</item>
+        <item>ORANGE</item>
+    </string-array>
+
     <string name="delete_item_with_confirm">Delete item without confirmation</string>
+    <string name="choose_theme">Choose a theme</string>
+    <string name="theme">Theme</string>
+    <string name="theme_color">Theme color</string>
+    <string name="choose_theme_color">Choose theme color</string>
 </resources>

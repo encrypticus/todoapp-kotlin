@@ -1,6 +1,5 @@
 package com.timofeev.todoapp.presentation.fragments.list
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -8,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -192,12 +192,15 @@ class ListFragment : Fragment(), MenuProvider, SearchView.OnQueryTextListener {
       Priority.LOW.name -> {
         toDoViewModel.toDoListSortedByLowPriority
       }
+
       Priority.MEDIUM.name -> {
         toDoViewModel.toDoListSortedByMediumPriority
       }
+
       Priority.HIGH.name -> {
         toDoViewModel.toDoListSortedByHighPriority
       }
+
       else -> {
         toDoViewModel.toDoList
       }

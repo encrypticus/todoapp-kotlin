@@ -18,13 +18,18 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFF</color>
+
     <color name="lightGray">#E6E6E6</color>
     <color name="darkGray">#4B4B4B</color>
     <color name="gray_800">#424242</color>
+
     <color name="red">#FF4646</color>
     <color name="yellow">#FFC114</color>
     <color name="green">#00C980</color>
 
+    <color name="orange_200">#FFCC80</color>
+    <color name="orange_500">#FF9800</color>
+    <color name="orange_700">#F57C00</color>
 
     <!-- Icons -->
     <color name="colorIcon">#000000</color>

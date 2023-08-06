@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.AnimBuilder
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -12,7 +12,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.timofeev.todoapp.R
 import com.timofeev.todoapp.databinding.ActivityMainBinding
-import com.timofeev.todoapp.presentation.fragments.preference.PreferenceFragment
+import com.timofeev.todoapp.domain.entities.Theme
+import com.timofeev.todoapp.domain.entities.ThemeColor
+import com.timofeev.todoapp.presentation.fragments.GlobalPrefs
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,6 +30,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    val currentTheme = GlobalPrefs.getStoredTheme(this)
+    val currentThemeColor = GlobalPrefs.getStoredThemeColor(this)
+    applySelectedTheme(currentTheme)
+    applySelectedThemeColor(currentThemeColor)
+
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
@@ -35,6 +42,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     setupNavBuilder()
 
     binding.navView.setNavigationItemSelectedListener(this)
+  }
+
+  private fun applySelectedThemeColor(currentThemeColor: String) {
+    when(currentThemeColor) {
+      ThemeColor.TEAL.name -> {
+        theme.applyStyle(R.style.Theme_Teal, true)
+      }
+      ThemeColor.INDIGO.name -> {
+        theme.applyStyle(R.style.Theme_Indigo, true)
+      }
+      ThemeColor.ORANGE.name -> {
+        theme.applyStyle(R.style.Theme_Orange, true)
+      }
+    }
+  }
+
+  private fun applySelectedTheme(currentTheme: String) {
+    when(currentTheme) {
+      Theme.DAY.name -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+      Theme.NIGHT.name -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+      Theme.SYSTEM.name -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    }
   }
 
   private fun setupToolBar() {
